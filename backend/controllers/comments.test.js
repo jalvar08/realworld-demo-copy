@@ -10,7 +10,7 @@ const Article = { findOne: vi.fn() };
 const Comment = { create: vi.fn(), findByPk: vi.fn() };
 mockRequire(require.resolve("../models"), { Article, Comment, User: {} });
 
-const { allComments, createComment, deleteComment } = require("./comments");
+const { allComments, createComment, updateComment, deleteComment } = require("./comments");
 
 function makeFollowableUser(overrides = {}) {
   return makeInstance(
@@ -109,6 +109,112 @@ describe("createComment", () => {
 
     expect(Comment.create).toHaveBeenCalledWith(expect.objectContaining({ body: "   " }));
     expect(res.status).toHaveBeenCalledWith(201);
+  });
+});
+
+describe("updateComment", () => {
+  // AC-081: an unauthenticated visitor cannot edit a comment.
+  test("no loggedUser -> UnauthorizedError", async () => {
+    const next = vi.fn();
+
+    await updateComment(
+      { loggedUser: undefined, body: { comment: { body: "edited" } }, params: {} },
+      makeRes(),
+      next,
+    );
+
+    expect(next.mock.calls[0][0]).toBeInstanceOf(UnauthorizedError);
+  });
+
+  // AC-082: an empty body is rejected, consistent with comment creation (REQ-022).
+  test("empty body -> FieldRequiredError, no comment fetched or saved", async () => {
+    const next = vi.fn();
+
+    await updateComment(
+      {
+        loggedUser: makeFollowableUser({ id: 9 }),
+        body: { comment: { body: "" } },
+        params: { commentId: 1 },
+      },
+      makeRes(),
+      next,
+    );
+
+    expect(next.mock.calls[0][0]).toBeInstanceOf(FieldRequiredError);
+    expect(Comment.findByPk).not.toHaveBeenCalled();
+  });
+
+  // AC-080: the comment's author can edit it; the updated comment is returned
+  // in the same shape createComment uses (author attached, following appended).
+  test("comment author edits own comment -> saved and returned", async () => {
+    const author = makeFollowableUser({ id: 9 });
+    const comment = makeInstance(
+      { id: 1, userId: 9, body: "old text" },
+      { save: vi.fn().mockResolvedValue() },
+    );
+    Comment.findByPk.mockResolvedValue(comment);
+    const res = makeRes();
+
+    await updateComment(
+      {
+        loggedUser: author,
+        body: { comment: { body: "new text" } },
+        params: { commentId: 1 },
+      },
+      res,
+      vi.fn(),
+    );
+
+    expect(comment.body).toBe("new text");
+    expect(comment.save).toHaveBeenCalled();
+    expect(res.json).toHaveBeenCalledWith({ comment });
+    expect(comment.dataValues.author).toBe(author);
+    expect(author.dataValues.following).toBe(false);
+  });
+
+  // AC-081: a non-author cannot edit someone else's comment, mirroring the
+  // delete ownership rule (REQ-023).
+  test("non-author attempts edit -> ForbiddenError, comment not saved", async () => {
+    const comment = makeInstance(
+      { id: 1, userId: 9, body: "old text" },
+      { save: vi.fn().mockResolvedValue() },
+    );
+    Comment.findByPk.mockResolvedValue(comment);
+    const next = vi.fn();
+
+    await updateComment(
+      {
+        loggedUser: makeFollowableUser({ id: 2 }),
+        body: { comment: { body: "new text" } },
+        params: { commentId: 1 },
+      },
+      makeRes(),
+      next,
+    );
+
+    expect(next.mock.calls[0][0]).toBeInstanceOf(ForbiddenError);
+    expect(comment.save).not.toHaveBeenCalled();
+    expect(comment.body).toBe("old text");
+  });
+
+  // Characterizes REQ-049's not-found handling: a missing comment is handled
+  // the same way deleteComment handles it (this isn't its own AC, same as
+  // deleteComment's equivalent path).
+  test("nonexistent comment -> NotFoundError", async () => {
+    Comment.findByPk.mockResolvedValue(null);
+    const next = vi.fn();
+
+    await updateComment(
+      {
+        loggedUser: makeFollowableUser({ id: 9 }),
+        body: { comment: { body: "new text" } },
+        params: { commentId: 999 },
+      },
+      makeRes(),
+      next,
+    );
+
+    expect(next.mock.calls[0][0]).toBeInstanceOf(NotFoundError);
   });
 });
 

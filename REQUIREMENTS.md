@@ -405,3 +405,28 @@ tools are not added to any auto-approval allowlist in
 `.claude/settings.json`, so the first use of the server in a session
 requires the normal Claude Code permission prompt rather than running
 unattended.
+
+### REQ-049 — Comment editing requires authorship, authentication, and a non-empty body
+An existing comment can be updated via `PUT /api/articles/:slug/comments/:commentId`.
+Editing a comment requires a resolved, authenticated user (unauthenticated
+requests are rejected, mirroring REQ-003) and requires the requesting user
+to be the comment's author; any other authenticated account attempting to
+edit the comment is rejected with an authorization error, identical to the
+deletion rule (REQ-023). Editing also requires a non-empty `body`, checked
+with the same truthiness check used by comment creation (REQ-022) — a
+whitespace-only body is not rejected server-side. A missing comment is
+rejected with a not-found error, the same way comment deletion handles a
+missing comment; the target article is not independently re-validated by
+this endpoint. On success, the comment's body is updated and persisted, and
+the response returns the updated comment in the same shape used by comment
+creation (the author's profile data attached directly, with
+follower/following information appended).
+
+### REQ-050 — Client comment edit control is limited to the comment's author and reflects saved state
+The comment list displays an edit control next to a comment only when the
+currently authenticated user is that comment's author — the same
+visibility rule already used for the existing delete control. Selecting it
+replaces the comment's text with an inline editable form; submitting it
+sends the edited body to the server and, on success, the comment list is
+refreshed from the server so the displayed text reflects the persisted
+value, including after a subsequent page reload.
