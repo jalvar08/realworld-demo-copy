@@ -404,6 +404,27 @@ changed.
   use of the server in a session requires an interactive permission
   prompt.
 
+### US-034 — Download article as Markdown
+*(REQ-059, REQ-060)*
+
+- **AC-100** — Given the article detail page for any article, when viewed
+  by anyone able to view that article — logged in or not — then a control
+  to download the article as a `.md` file is visible, with no additional
+  access granted or required.
+- **AC-101** — Given an article with a title, a non-empty description, and
+  a body, when its Markdown file is generated, then the content is the
+  title as a `# ` heading, followed by a blank line, the description,
+  another blank line, and then the body, with a trailing newline at the
+  end of the file.
+- **AC-102** — Given an article's body contains Markdown syntax and special
+  characters (e.g. code fences, emphasis markers, angle brackets,
+  ampersands, quotes), when its Markdown file is generated, then the body
+  appears in the output verbatim, unescaped and unmodified.
+- **AC-103** — Given an article's slug, when its downloadable filename is
+  derived, then the filename is `<slug>.md`; given an article with no
+  slug (or an empty-string slug), then the filename falls back to
+  `untitled-article.md`.
+
 ---
 
 ## Traceability Matrix
@@ -458,3 +479,5 @@ changed.
 | REQ-046 | US-027 | AC-074, AC-075 |
 | REQ-047 | US-028 | AC-076, AC-077 |
 | REQ-048 | US-028 | AC-078, AC-079 |
+| REQ-059 | US-034 | AC-100–AC-102 |
+| REQ-060 | US-034 | AC-103 |

@@ -405,3 +405,27 @@ tools are not added to any auto-approval allowlist in
 `.claude/settings.json`, so the first use of the server in a session
 requires the normal Claude Code permission prompt rather than running
 unattended.
+
+---
+
+### REQ-059 — Downloadable Markdown copy of an article's content
+The article detail page offers a control that downloads the currently
+displayed article as a standalone `.md` file, generated entirely in the
+browser (no request to the server beyond the article fetch already made to
+display the page). The file's content is: a level-1 Markdown heading
+(`# `) containing the article's title; then, only when the article has a
+non-empty description, the description as its own paragraph; then the
+article's body, included verbatim (no re-formatting, no escaping) so any
+Markdown syntax already in the body — code fences, emphasis, blockquotes,
+angle brackets, ampersands, quotes, etc. — is preserved exactly. Each
+present section is separated by a single blank line, and the file ends
+with a trailing newline. This control is present regardless of whether the
+viewer is logged in, and requires no access beyond being able to view the
+article itself (US-034).
+
+### REQ-060 — Downloaded Markdown filename derived from the article's slug
+The filename offered for the download in REQ-059 is `<slug>.md`, where
+`<slug>` is the article's own slug (REQ-015). **Boundary:** if the article
+has no slug, or its slug is an empty string, the filename falls back to
+`untitled-article.md` instead of producing an empty or invalid filename
+(US-034).
