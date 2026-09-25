@@ -24,7 +24,9 @@ function Home() {
             <Outlet />
           </div>
 
-          <PopularTags />
+          <aside className="col-md-3">
+            <PopularTags />
+          </aside>
         </FeedProvider>
       </ContainerRow>
     </div>
