@@ -405,3 +405,32 @@ tools are not added to any auto-approval allowlist in
 `.claude/settings.json`, so the first use of the server in a session
 requires the normal Claude Code permission prompt rather than running
 unattended.
+
+### REQ-055 — Article body headings are parsed into a table of contents
+On the article detail page, the article's Markdown `body` is parsed for
+ATX-style headings (a line starting with one to six `#` characters,
+optionally indented up to 3 spaces, followed by the heading text) each
+time the page renders, independent of how the body is rendered to HTML.
+A heading-like line inside a fenced code block (delimited by a line of
+three or more `` ` `` or `~` characters) is not treated as a heading.
+
+**Boundary:** Setext-style headings (a line of text underlined on the
+next line by a run of `=` or `-` characters) are not recognized by this
+parsing, even though they are rendered as real `<h1>`/`<h2>` elements by
+the article body's existing Markdown renderer. This is a deliberate scope
+limit: only ATX headings produce a table-of-contents entry.
+
+**Special case:** If the same heading text appears more than once in the
+body, each occurrence produces its own table-of-contents entry, and those
+entries carry the same, non-unique identifier — matching the identifier
+the article body's existing Markdown renderer itself assigns to each of
+the duplicate rendered headings (also without de-duplicating them).
+
+### REQ-056 — Table of contents display and navigation
+If the article body (REQ-055) contains at least one heading, the article
+detail page displays a table of contents as an ordered, linked list of
+those headings, each entry showing the heading's text at its heading
+level. Selecting an entry navigates to the corresponding heading rendered
+in the article body. If the article body contains no headings, no
+table-of-contents element is displayed — not an empty container, and not
+an error.

@@ -404,6 +404,28 @@ changed.
   use of the server in a session requires an interactive permission
   prompt.
 
+### US-032 — Table of contents for article bodies
+*(REQ-055, REQ-056)*
+
+- **AC-092** — Given an article body containing ATX headings (`#` through
+  `######`), when the article detail page renders, then the table of
+  contents lists an entry for each heading, in the order they appear in
+  the body.
+- **AC-093** — Given an article body with a heading-like line inside a
+  fenced code block, when the table of contents is built, then that line
+  does not produce an entry. Given an article body with two headings
+  sharing identical text, when the table of contents is built, then both
+  produce entries carrying the same identifier, matching the (also
+  non-deduplicated) identifiers the article body's Markdown renderer
+  assigns to the corresponding rendered headings.
+- **AC-094** — Given an article body with no headings, when the article
+  detail page renders, then no table-of-contents element is rendered — no
+  empty container and no error.
+- **AC-095** — Given the table of contents is displayed, when a reader
+  selects one of its entries, then the view scrolls to the corresponding
+  heading in the rendered article body, because the entry's link target
+  matches the identifier on that rendered heading.
+
 ---
 
 ## Traceability Matrix
@@ -458,3 +480,5 @@ changed.
 | REQ-046 | US-027 | AC-074, AC-075 |
 | REQ-047 | US-028 | AC-076, AC-077 |
 | REQ-048 | US-028 | AC-078, AC-079 |
+| REQ-055 | US-032 | AC-092, AC-093 |
+| REQ-056 | US-032 | AC-094, AC-095 |
