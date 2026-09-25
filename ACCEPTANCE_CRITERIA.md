@@ -404,6 +404,27 @@ changed.
   use of the server in a session requires an interactive permission
   prompt.
 
+### US-030 — Article cover image
+*(REQ-051, REQ-052)*
+
+- **AC-084** — Given an authenticated user creates an article with an
+  `image` URL, when submitted, then the article is created with that image
+  stored, and the image URL is included in the returned article JSON.
+- **AC-085** — Given an authenticated user creates or updates an article
+  without an `image` value, when submitted, then the request succeeds
+  exactly as it did before this field existed, and REQ-015's required-field
+  validation (`title`, `description`, `body`) is unaffected.
+- **AC-086** — Given the article's author submits an update with a truthy
+  `image` value, when saved, then the article's stored image is replaced
+  with that value; given a falsy `image` value (e.g., an empty string) is
+  submitted instead, then the existing image is left unchanged — the same
+  truthy-check boundary REQ-017 already describes for `description` and
+  `body` on update.
+- **AC-087** — Given an article whose `image` is set, when its preview card
+  or detail page is rendered, then the cover image is displayed. Given an
+  article whose `image` is not set, when the same views are rendered, then
+  no `<img>` element and no placeholder are rendered in its place.
+
 ---
 
 ## Traceability Matrix
@@ -458,3 +479,5 @@ changed.
 | REQ-046 | US-027 | AC-074, AC-075 |
 | REQ-047 | US-028 | AC-076, AC-077 |
 | REQ-048 | US-028 | AC-078, AC-079 |
+| REQ-051 | US-030 | AC-084–AC-086 |
+| REQ-052 | US-030 | AC-085, AC-087 |

@@ -155,6 +155,55 @@ describe("createArticle", () => {
     expect(created.addTagList).toHaveBeenCalledTimes(2);
     expect(res.status).toHaveBeenCalledWith(201);
   });
+
+  // AC-084: an optional cover image URL is accepted on creation and stored.
+  test("image URL provided -> passed through to Article.create and returned in article JSON", async () => {
+    Article.findOne.mockResolvedValue(null);
+    const created = makeArticle({ author: loggedUser, image: "https://example.com/cover.jpg" });
+    Article.create.mockResolvedValue(created);
+    const res = makeRes();
+
+    await createArticle(
+      {
+        loggedUser,
+        body: {
+          article: {
+            title: "T",
+            description: "d",
+            body: "b",
+            image: "https://example.com/cover.jpg",
+            tagList: [],
+          },
+        },
+      },
+      res,
+      vi.fn(),
+    );
+
+    expect(Article.create).toHaveBeenCalledWith(
+      expect.objectContaining({ image: "https://example.com/cover.jpg" }),
+    );
+    const [{ article: sent }] = res.json.mock.calls[0];
+    expect(toPlainJSON(sent).image).toBe("https://example.com/cover.jpg");
+  });
+
+  // AC-085: the image field is optional and does not affect REQ-015's
+  // required-field validation (title, description, body are unaffected).
+  test("no image URL -> article still created, image omitted", async () => {
+    Article.findOne.mockResolvedValue(null);
+    const created = makeArticle({ author: loggedUser });
+    Article.create.mockResolvedValue(created);
+    const res = makeRes();
+
+    await createArticle(
+      { loggedUser, body: { article: { title: "T", description: "d", body: "b", tagList: [] } } },
+      res,
+      vi.fn(),
+    );
+
+    expect(Article.create).toHaveBeenCalledWith(expect.objectContaining({ image: undefined }));
+    expect(res.status).toHaveBeenCalledWith(201);
+  });
 });
 
 describe("updateArticle", () => {
@@ -235,6 +284,43 @@ describe("updateArticle", () => {
 
     expect(article.description).toBe("original description");
     expect(article.body).toBe("original body");
+  });
+
+  // AC-086: a truthy image on update replaces the existing image, mirroring
+  // the same truthy-check semantics used for description/body (REQ-017).
+  test("truthy image on update replaces the existing image", async () => {
+    const author = makeFollowableUser();
+    const article = makeArticle({ author, image: "https://example.com/old.jpg" });
+    Article.findOne.mockResolvedValue(article);
+
+    await updateArticle(
+      {
+        loggedUser: author,
+        params: { slug: "a-slug" },
+        body: { article: { image: "https://example.com/new.jpg" } },
+      },
+      makeRes(),
+      vi.fn(),
+    );
+
+    expect(article.image).toBe("https://example.com/new.jpg");
+    expect(article.save).toHaveBeenCalled();
+  });
+
+  // AC-086: a falsy image on update leaves the existing image unchanged,
+  // matching REQ-017's description/body boundary behavior.
+  test("falsy image on update leaves the existing image unchanged", async () => {
+    const author = makeFollowableUser();
+    const article = makeArticle({ author, image: "https://example.com/old.jpg" });
+    Article.findOne.mockResolvedValue(article);
+
+    await updateArticle(
+      { loggedUser: author, params: { slug: "a-slug" }, body: { article: { image: "" } } },
+      makeRes(),
+      vi.fn(),
+    );
+
+    expect(article.image).toBe("https://example.com/old.jpg");
   });
 });
 
