@@ -4,6 +4,7 @@ import { Outlet, useLocation, useNavigate, useParams } from "react-router-dom";
 import ArticleMeta from "../../components/ArticleMeta";
 import ArticlesButtons from "../../components/ArticlesButtons";
 import ArticleTags from "../../components/ArticleTags";
+import ArticleToc from "../../components/ArticleToc";
 import BannerContainer from "../../components/BannerContainer";
 import { useAuth } from "../../context/AuthContext";
 import getArticle from "../../services/getArticle";
@@ -39,6 +40,7 @@ function Article() {
       <div className="container page">
         <div className="row article-content">
           <div className="col-md-12">
+            {body && <ArticleToc body={body} />}
             {body && <Markdown options={{ forceBlock: true }}>{body}</Markdown>}
             <ArticleTags tagList={tagList} />
           </div>
