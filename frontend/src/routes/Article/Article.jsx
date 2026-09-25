@@ -5,6 +5,7 @@ import ArticleMeta from "../../components/ArticleMeta";
 import ArticlesButtons from "../../components/ArticlesButtons";
 import ArticleTags from "../../components/ArticleTags";
 import BannerContainer from "../../components/BannerContainer";
+import DownloadMarkdownButton from "../../components/DownloadMarkdownButton";
 import { useAuth } from "../../context/AuthContext";
 import getArticle from "../../services/getArticle";
 
@@ -42,6 +43,10 @@ function Article() {
             {body && <Markdown options={{ forceBlock: true }}>{body}</Markdown>}
             <ArticleTags tagList={tagList} />
           </div>
+        </div>
+
+        <div className="article-download">
+          <DownloadMarkdownButton article={article} />
         </div>
 
         <hr />
