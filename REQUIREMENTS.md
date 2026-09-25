@@ -406,6 +406,68 @@ tools are not added to any auto-approval allowlist in
 requires the normal Claude Code permission prompt rather than running
 unattended.
 
+### REQ-049 — Comment editing requires authorship, authentication, and a non-empty body
+An existing comment can be updated via `PUT /api/articles/:slug/comments/:commentId`.
+Editing a comment requires a resolved, authenticated user (unauthenticated
+requests are rejected, mirroring REQ-003) and requires the requesting user
+to be the comment's author; any other authenticated account attempting to
+edit the comment is rejected with an authorization error, identical to the
+deletion rule (REQ-023). Editing also requires a non-empty `body`, checked
+with the same truthiness check used by comment creation (REQ-022) — a
+whitespace-only body is not rejected server-side. A missing comment is
+rejected with a not-found error, the same way comment deletion handles a
+missing comment; the target article is not independently re-validated by
+this endpoint. On success, the comment's body is updated and persisted, and
+the response returns the updated comment in the same shape used by comment
+creation (the author's profile data attached directly, with
+follower/following information appended).
+
+### REQ-050 — Client comment edit control is limited to the comment's author and reflects saved state
+The comment list displays an edit control next to a comment only when the
+currently authenticated user is that comment's author — the same
+visibility rule already used for the existing delete control. Selecting it
+replaces the comment's text with an inline editable form; submitting it
+sends the edited body to the server and, on success, the comment list is
+refreshed from the server so the displayed text reflects the persisted
+value, including after a subsequent page reload.
+
+### REQ-051 — Optional article cover image
+An article may have an optional `image` field (a URL string), mirroring how
+`User` already has an optional `image` field. It is not required on article
+creation, and creating an article without one succeeds exactly as before
+(the required-field validation for `title`, `description`, and `body`
+described in REQ-015 is unaffected).
+
+**Boundary:** on article update, a truthy `image` value replaces the
+article's stored image; a falsy `image` value (e.g., an empty string, or
+the field being omitted) leaves the existing image unchanged rather than
+clearing it — the same truthy-check semantics REQ-017 already describes for
+`description` and `body` on update.
+
+### REQ-052 — Article cover image is included in article JSON and rendered when present
+Any article representation returned by the API includes the `image` field
+(`null`/absent when not set). In the client, when an article's `image` is
+set, it is rendered on that article's preview card and on its detail page;
+when `image` is not set, nothing is rendered in its place — no `<img>`
+element and no placeholder image are shown, so layouts without a cover
+image are unchanged from before this field existed. The rendered `<img>`
+uses the submitted URL as-is: an invalid or unreachable URL does not
+prevent the article from being created, updated, or rendered — it results
+in the browser's normal broken-image presentation, not an error.
+
+### REQ-064 — Article cover image can be cleared on update (amends REQ-051)
+**Amends REQ-051's Boundary.** On article update, a submitted `image` value
+is applied to the article as-is unless it is `undefined` (i.e., the field
+was omitted), in which case the stored image is left unchanged — the same
+per-field rule REQ-011 describes for a user's profile `image`/`bio`. This
+supersedes REQ-051's truthy-only update rule: submitting an empty string or
+`null` now clears the article's cover image instead of being ignored, so an
+author who removes the URL in the article editor removes the cover image.
+An empty-string `image` is stored as submitted and is treated as "not set"
+for rendering purposes (REQ-052), so no `<img>` is rendered for it. Article
+creation (REQ-051) and the other updatable fields' semantics (REQ-017) are
+unchanged.
+
 ### REQ-053 — Estimated reading time is derived from article body word count
 Wherever an article's creation date is displayed (article preview cards and
 the article detail page — REQ-040), an estimated reading time is also
@@ -433,4 +495,3 @@ associations. This pre-existing shape means the reading-time estimate
 (REQ-053) can be computed for preview cards from the same list response
 already fetched to render them, without any additional request or change to
 the listing endpoint's response shape.
-

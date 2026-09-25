@@ -1,6 +1,7 @@
 import Markdown from "markdown-to-jsx";
 import { useEffect, useState } from "react";
 import { Outlet, useLocation, useNavigate, useParams } from "react-router-dom";
+import ArticleCoverImage from "../../components/ArticleCoverImage";
 import ArticleMeta from "../../components/ArticleMeta";
 import ArticlesButtons from "../../components/ArticlesButtons";
 import ArticleTags from "../../components/ArticleTags";
@@ -11,7 +12,7 @@ import getArticle from "../../services/getArticle";
 function Article() {
   const { state } = useLocation();
   const [article, setArticle] = useState(state || {});
-  const { title, body, tagList, createdAt, author } = article || {};
+  const { title, body, tagList, createdAt, author, image } = article || {};
   const { headers, isAuth } = useAuth();
   const navigate = useNavigate();
   const { slug } = useParams();
@@ -39,6 +40,7 @@ function Article() {
       <div className="container page">
         <div className="row article-content">
           <div className="col-md-12">
+            <ArticleCoverImage image={image} />
             {body && <Markdown options={{ forceBlock: true }}>{body}</Markdown>}
             <ArticleTags tagList={tagList} />
           </div>
