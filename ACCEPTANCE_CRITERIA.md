@@ -509,3 +509,25 @@ changed.
 | REQ-051 | US-030 | AC-084–AC-086 |
 | REQ-052 | US-030 | AC-085, AC-087 |
 | REQ-064 | US-030 | AC-109 |
+| REQ-053 | US-031 | AC-088–AC-091 |
+| REQ-054 | US-031 | AC-088 |
+
+### US-031 — Reading time badge alongside the date
+*(REQ-053, REQ-054, REQ-040)*
+
+- **AC-088** — Given an article preview card or the article detail page,
+  when it renders, then an estimated reading time (e.g. "4 min read") is
+  displayed immediately alongside the existing date, and the date's own
+  formatting (REQ-040/AC-060) is unchanged.
+- **AC-089** — Given an article body with an empty string, only whitespace,
+  `null`, or `undefined` as its value, when the reading time is computed,
+  then the displayed estimate is "1 min read" — never `0`, a negative
+  number, or `NaN`.
+- **AC-090** — Given an article body of exactly 200 words, when the reading
+  time is computed, then it displays "1 min read"; given a body of 201
+  words, then it displays "2 min read" — confirming the estimate rounds up
+  rather than down or to the nearest whole minute.
+- **AC-091** — Given an article's body is edited and the page re-renders
+  with the new body text, when the reading time is next computed, then the
+  displayed estimate reflects the new body's word count, because it is
+  derived at render time rather than cached or stored.

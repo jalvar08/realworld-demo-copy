@@ -467,3 +467,31 @@ An empty-string `image` is stored as submitted and is treated as "not set"
 for rendering purposes (REQ-052), so no `<img>` is rendered for it. Article
 creation (REQ-051) and the other updatable fields' semantics (REQ-017) are
 unchanged.
+
+### REQ-053 — Estimated reading time is derived from article body word count
+Wherever an article's creation date is displayed (article preview cards and
+the article detail page — REQ-040), an estimated reading time is also
+displayed immediately alongside it, without changing the date's own
+formatting. The estimate is computed client-side, at render time, from the
+current article body's word count divided by a fixed rate of 200 words per
+minute, rounded up to the nearest whole minute, with a minimum displayed
+value of 1 minute. Because the estimate is recomputed from whatever body
+text is currently loaded, it reflects the result of any edit to the
+article's body automatically, without any dedicated update mechanism.
+
+**Boundary:** an empty, whitespace-only, `null`, or `undefined` body
+produces an estimate of 1 minute — never `0`, a negative number, or `NaN`.
+An article whose word count is an exact multiple of 200 (e.g. exactly 200
+words) still rounds up to that same whole-minute value (1 minute for 200
+words), while one word over that threshold (e.g. 201 words) rounds up to
+the next minute (2 minutes).
+
+### REQ-054 — Article preview listing payload already includes the article body
+The article-listing endpoint (used for the home feed, profile articles, and
+profile favorites) returns each article's full `body` field, the same as
+the single-article endpoint — it applies no attribute restriction to the
+`Article` model's own fields, only to the nested `tagList`/`author`
+associations. This pre-existing shape means the reading-time estimate
+(REQ-053) can be computed for preview cards from the same list response
+already fetched to render them, without any additional request or change to
+the listing endpoint's response shape.
