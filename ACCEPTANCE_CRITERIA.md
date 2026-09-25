@@ -424,6 +424,12 @@ changed.
   fields alongside `username`/`email`/`bio`/`image`/`password`, when
   saved, then those existing fields are applied exactly per REQ-011 and
   REQ-012, unaffected by the presence of the new fields.
+- **AC-108** — Given a `website`, `github`, or `twitter` value that is not
+  an absolute `http://`/`https://` URL (e.g. a `javascript:` or `data:`
+  value, or a relative path), when the profile is rendered, then that
+  value is not rendered as a link; given at least one of the three fields
+  is a valid absolute http(s) URL, when the profile is rendered, then only
+  that field renders as a link and the unsafe field(s) do not.
 
 ---
 
@@ -481,3 +487,4 @@ changed.
 | REQ-048 | US-028 | AC-078, AC-079 |
 | REQ-057 | US-033 | AC-096, AC-098, AC-099 |
 | REQ-058 | US-033 | AC-096, AC-097, AC-099 |
+| REQ-063 | US-033 | AC-108 |

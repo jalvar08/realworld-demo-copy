@@ -432,3 +432,13 @@ link anywhere in the client (see REQ-058's related client behavior in
 `ACCEPTANCE_CRITERIA.md`), which is what "clears" the link in practice —
 there is no separate server-side clearing behavior beyond what REQ-011
 already does for every other field.
+
+### REQ-063 — Profile links render only for absolute http/https URLs
+A stored `website`, `github`, or `twitter` value is rendered as a
+clickable link on the public profile only when, after trimming
+whitespace, it begins with `http://` or `https://` (case-insensitive).
+Any other stored value — including a `javascript:` or `data:` URL, a
+relative path, or any other non-matching string — is not rendered as a
+link at all; that field is treated the same as if it were unset for
+display purposes. This is a client-side rendering guard only and does not
+change what value the server accepts or stores (REQ-058).
