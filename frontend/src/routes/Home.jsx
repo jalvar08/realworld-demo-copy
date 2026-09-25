@@ -5,6 +5,7 @@ import FeedToggler from "../components/FeedToggler";
 import { useAuth } from "../context/AuthContext";
 import FeedProvider from "../context/FeedContext";
 import PopularTags from "./../components/PopularTags";
+import RecentlyViewed from "./../components/RecentlyViewed";
 
 function Home() {
   const { isAuth } = useAuth();
@@ -24,7 +25,10 @@ function Home() {
             <Outlet />
           </div>
 
-          <PopularTags />
+          <aside className="col-md-3">
+            <PopularTags />
+            <RecentlyViewed />
+          </aside>
         </FeedProvider>
       </ContainerRow>
     </div>

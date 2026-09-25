@@ -404,6 +404,27 @@ changed.
   use of the server in a session requires an interactive permission
   prompt.
 
+### US-035 — Recently viewed articles
+*(REQ-061, REQ-062)*
+
+- **AC-104** — Given a visitor (anonymous or logged-in) opens an article's
+  detail page and its data becomes available, when the recently viewed
+  list is next read, then an entry for that article's slug, title, and
+  (when available) author username is present at the top of the list.
+- **AC-105** — Given a visitor re-opens an article already present in
+  their recently viewed list, when the list is next read, then that
+  article's entry moves to the top and no second entry for the same slug
+  is added; and given more than 5 distinct articles have been viewed, when
+  the list is read, then it contains only the 5 most recently viewed,
+  dropping the least recent.
+- **AC-106** — Given the recently viewed list is empty, unavailable
+  (`localStorage` disabled or throwing), or contains corrupt/non-array
+  data, when the Home page renders, then the recently viewed block is not
+  rendered at all, and reading the list does not throw.
+- **AC-107** — Given a non-empty recently viewed list, when the Home page
+  renders, then each entry is shown as a link to `/article/<slug>`, most
+  recently viewed first, alongside Popular Tags.
+
 ---
 
 ## Traceability Matrix
@@ -458,3 +479,5 @@ changed.
 | REQ-046 | US-027 | AC-074, AC-075 |
 | REQ-047 | US-028 | AC-076, AC-077 |
 | REQ-048 | US-028 | AC-078, AC-079 |
+| REQ-061 | US-035 | AC-104, AC-105, AC-106 |
+| REQ-062 | US-035 | AC-106, AC-107 |

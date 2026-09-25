@@ -405,3 +405,29 @@ tools are not added to any auto-approval allowlist in
 `.claude/settings.json`, so the first use of the server in a session
 requires the normal Claude Code permission prompt rather than running
 unattended.
+
+### REQ-061 — Recently viewed articles are recorded per-browser
+Opening an article's detail page records that article in a "recently
+viewed" list stored in the browser (`localStorage`), keyed by a single
+namespaced storage key, independent of any authenticated account. This
+list is available to anonymous and logged-in visitors alike, and is not
+synchronized across browsers or devices. Each recorded entry stores only
+the data needed to render a link back to the article: its slug, its
+title, and, when available, its author's username. The list is ordered
+most-recently-viewed first. Re-viewing an article already in the list
+moves its existing entry to the top rather than adding a second entry for
+the same slug.
+
+**Boundary:** the list is capped at 5 entries; recording a 6th distinct
+article drops the least-recently-viewed entry. If the stored value is
+missing, is not valid JSON, or does not decode to an array — or if
+`localStorage` itself is unavailable (e.g., disabled or blocked by the
+browser) — the list is treated as empty rather than raising an error, and
+recording a view under those conditions is silently skipped rather than
+throwing.
+
+### REQ-062 — Recently viewed list displayed on the Home page
+The Home page displays the visitor's recently viewed articles, most
+recent first, as a block in the same sidebar column as Popular Tags, with
+each entry linking to that article's detail page. When the list is empty,
+no such block is rendered.
