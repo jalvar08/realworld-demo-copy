@@ -405,3 +405,40 @@ tools are not added to any auto-approval allowlist in
 `.claude/settings.json`, so the first use of the server in a session
 requires the normal Claude Code permission prompt rather than running
 unattended.
+
+---
+
+## Profile Social Links
+
+### REQ-057 — Profile social links
+A user's account carries three optional fields for links to other online
+presences: `website`, `github`, and `twitter`. Each holds a full URL
+string and has no value by default. The authenticated user's own account
+representation and the public profile representation
+(`GET /api/profiles/:username`) both include all three fields, whatever
+their current value.
+
+### REQ-058 — Social link fields follow existing partial-update semantics
+Updating a user's profile applies `website`, `github`, and `twitter`
+through the same mechanism REQ-011 already applies to `username`, `email`,
+`bio`, and `image`: a field submitted as `undefined` (omitted from the
+request) is left unchanged, and any other submitted value — including an
+empty string or `null` — is written to the account as-is. This does not
+differ from REQ-011's existing behavior for those other fields; the same
+generic per-field assignment handles all of them, including the three new
+ones, with no field-specific code. A social link field written as an
+empty string or `null` reads back as falsy, so it is not rendered as a
+link anywhere in the client (see REQ-058's related client behavior in
+`ACCEPTANCE_CRITERIA.md`), which is what "clears" the link in practice —
+there is no separate server-side clearing behavior beyond what REQ-011
+already does for every other field.
+
+### REQ-063 — Profile links render only for absolute http/https URLs
+A stored `website`, `github`, or `twitter` value is rendered as a
+clickable link on the public profile only when, after trimming
+whitespace, it begins with `http://` or `https://` (case-insensitive).
+Any other stored value — including a `javascript:` or `data:` URL, a
+relative path, or any other non-matching string — is not rendered as a
+link at all; that field is treated the same as if it were unset for
+display purposes. This is a client-side rendering guard only and does not
+change what value the server accepts or stores (REQ-058).

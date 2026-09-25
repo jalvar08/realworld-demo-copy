@@ -47,6 +47,25 @@ describe("getProfile", () => {
     expect(profile.dataValues.following).toBe(false);
     expect(profile.dataValues.followersCount).toBe(5);
   });
+
+  // AC-098 (REQ-057/REQ-058): the public profile response includes any
+  // social links set on the account - the controller requires no special
+  // handling since it only excludes `email` from the query attributes.
+  test("profile response includes social links when set", async () => {
+    const profile = makeProfile();
+    profile.dataValues.website = "https://example.com";
+    profile.dataValues.github = "https://github.com/author";
+    profile.dataValues.twitter = "";
+    User.findOne.mockResolvedValue(profile);
+    const res = makeRes();
+
+    await getProfile({ loggedUser: undefined, params: { username: "author" } }, res, vi.fn());
+
+    expect(res.json).toHaveBeenCalledWith({ profile });
+    expect(profile.dataValues.website).toBe("https://example.com");
+    expect(profile.dataValues.github).toBe("https://github.com/author");
+    expect(profile.dataValues.twitter).toBe("");
+  });
 });
 
 describe("followToggler", () => {

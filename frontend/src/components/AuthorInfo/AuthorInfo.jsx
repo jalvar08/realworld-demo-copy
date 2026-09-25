@@ -5,12 +5,14 @@ import { useAuth } from "../../context/AuthContext";
 import getProfile from "../../services/getProfile";
 import Avatar from "../Avatar";
 import FollowButton from "../FollowButton";
+import ProfileSocialLinks from "../ProfileSocialLinks";
 
 function AuthorInfo() {
   const { state } = useLocation();
-  const [{ bio, followersCount, following, image }, setAuthor] = useState(
-    state || {}
-  );
+  const [
+    { bio, followersCount, following, github, image, twitter, website },
+    setAuthor,
+  ] = useState(state || {});
   const { headers, loggedUser } = useAuth();
   const { username } = useParams();
   const navigate = useNavigate();
@@ -36,6 +38,8 @@ function AuthorInfo() {
       <h4>{username}</h4>
 
       {bio && <Markdown options={{ forceBlock: true }}>{bio}</Markdown>}
+
+      <ProfileSocialLinks github={github} twitter={twitter} website={website} />
 
       {username === loggedUser.username ? (
         <Link
