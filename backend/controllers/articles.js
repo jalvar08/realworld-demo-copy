@@ -196,7 +196,7 @@ const updateArticle = async (req, res, next) => {
     }
     if (description) article.description = description;
     if (body) article.body = body;
-    if (image) article.image = image;
+    if (image !== undefined) article.image = image;
     await article.save();
 
     appendTagList(article.tagList, article);

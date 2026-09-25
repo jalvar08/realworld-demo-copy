@@ -424,6 +424,11 @@ changed.
   or detail page is rendered, then the cover image is displayed. Given an
   article whose `image` is not set, when the same views are rendered, then
   no `<img>` element and no placeholder are rendered in its place.
+- **AC-109** — *(REQ-064; supersedes the falsy-value clause of AC-086)*
+  Given an article with a stored cover image, when its author submits an
+  update whose `image` is an empty string or `null`, then the stored image
+  is cleared and the article renders with no cover image. Given an update
+  that omits `image` entirely, then the stored image is left unchanged.
 
 ---
 
@@ -481,3 +486,4 @@ changed.
 | REQ-048 | US-028 | AC-078, AC-079 |
 | REQ-051 | US-030 | AC-084–AC-086 |
 | REQ-052 | US-030 | AC-085, AC-087 |
+| REQ-064 | US-030 | AC-109 |

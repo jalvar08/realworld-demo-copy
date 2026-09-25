@@ -429,3 +429,16 @@ image are unchanged from before this field existed. The rendered `<img>`
 uses the submitted URL as-is: an invalid or unreachable URL does not
 prevent the article from being created, updated, or rendered — it results
 in the browser's normal broken-image presentation, not an error.
+
+### REQ-064 — Article cover image can be cleared on update (amends REQ-051)
+**Amends REQ-051's Boundary.** On article update, a submitted `image` value
+is applied to the article as-is unless it is `undefined` (i.e., the field
+was omitted), in which case the stored image is left unchanged — the same
+per-field rule REQ-011 describes for a user's profile `image`/`bio`. This
+supersedes REQ-051's truthy-only update rule: submitting an empty string or
+`null` now clears the article's cover image instead of being ignored, so an
+author who removes the URL in the article editor removes the cover image.
+An empty-string `image` is stored as submitted and is treated as "not set"
+for rendering purposes (REQ-052), so no `<img>` is rendered for it. Article
+creation (REQ-051) and the other updatable fields' semantics (REQ-017) are
+unchanged.

@@ -286,8 +286,7 @@ describe("updateArticle", () => {
     expect(article.body).toBe("original body");
   });
 
-  // AC-086: a truthy image on update replaces the existing image, mirroring
-  // the same truthy-check semantics used for description/body (REQ-017).
+  // AC-086 / AC-109: a non-empty image on update replaces the existing image.
   test("truthy image on update replaces the existing image", async () => {
     const author = makeFollowableUser();
     const article = makeArticle({ author, image: "https://example.com/old.jpg" });
@@ -307,15 +306,35 @@ describe("updateArticle", () => {
     expect(article.save).toHaveBeenCalled();
   });
 
-  // AC-086: a falsy image on update leaves the existing image unchanged,
-  // matching REQ-017's description/body boundary behavior.
-  test("falsy image on update leaves the existing image unchanged", async () => {
+  // REQ-064 / AC-109 (supersedes REQ-051's truthy-only update boundary, per
+  // REQ-011's pattern): any submitted image value other than `undefined` is
+  // applied as-is, so an empty string or null clears the cover image.
+  test.each([
+    ["an empty string", ""],
+    ["null", null],
+  ])("submitting %s as image on update clears the existing image", async (_label, value) => {
     const author = makeFollowableUser();
     const article = makeArticle({ author, image: "https://example.com/old.jpg" });
     Article.findOne.mockResolvedValue(article);
 
     await updateArticle(
-      { loggedUser: author, params: { slug: "a-slug" }, body: { article: { image: "" } } },
+      { loggedUser: author, params: { slug: "a-slug" }, body: { article: { image: value } } },
+      makeRes(),
+      vi.fn(),
+    );
+
+    expect(article.image).toBe(value);
+    expect(article.save).toHaveBeenCalled();
+  });
+
+  // REQ-064 / AC-109: omitting image from the update leaves it unchanged.
+  test("omitting image on update leaves the existing image unchanged", async () => {
+    const author = makeFollowableUser();
+    const article = makeArticle({ author, image: "https://example.com/old.jpg" });
+    Article.findOne.mockResolvedValue(article);
+
+    await updateArticle(
+      { loggedUser: author, params: { slug: "a-slug" }, body: { article: { title: "New title" } } },
       makeRes(),
       vi.fn(),
     );
