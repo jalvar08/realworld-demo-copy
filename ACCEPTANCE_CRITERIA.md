@@ -404,6 +404,26 @@ changed.
   use of the server in a session requires an interactive permission
   prompt.
 
+### US-029 — Edit own comment
+*(REQ-049, REQ-050)*
+
+- **AC-080** — Given the comment's author submits an edit with a new,
+  non-empty body, when saved, then the comment's body is updated and the
+  response returns the updated comment in the same shape used by comment
+  creation; a subsequent reload of the comment list displays the edited
+  text.
+- **AC-081** — Given a user who is not the comment's author, or no
+  `Authorization` header at all, when a comment edit is attempted, then the
+  request is rejected (403 for a non-author, 401 for no credentials) and
+  the comment's body is left unchanged.
+- **AC-082** — Given an edit request with an empty `body`, when submitted,
+  then a field-required error is returned and the comment is left
+  unchanged.
+- **AC-083** — Given the comment list is rendered, when the currently
+  authenticated user is not the comment's author (or no user is
+  authenticated), then no edit control is shown for that comment; it is
+  shown only when they are the author.
+
 ### US-030 — Article cover image
 *(REQ-051, REQ-052)*
 
@@ -484,6 +504,8 @@ changed.
 | REQ-046 | US-027 | AC-074, AC-075 |
 | REQ-047 | US-028 | AC-076, AC-077 |
 | REQ-048 | US-028 | AC-078, AC-079 |
+| REQ-049 | US-029 | AC-080–AC-082 |
+| REQ-050 | US-029 | AC-080, AC-083 |
 | REQ-051 | US-030 | AC-084–AC-086 |
 | REQ-052 | US-030 | AC-085, AC-087 |
 | REQ-064 | US-030 | AC-109 |

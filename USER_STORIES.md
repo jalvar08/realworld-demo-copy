@@ -145,6 +145,13 @@ blocked at the database level, not just by the tool's own claims.
 
 ---
 
+**US-029** — As a comment author, I want to edit my own comment, so that I
+can fix a mistake or clarify what I said without deleting the whole comment
+and losing the thread position/replies context.
+*Related requirements: REQ-049, REQ-050*
+
+---
+
 **US-030** — As an author, I want to add a cover image to my article, so
 that it's more visually distinctive in listings and on its own page.
 *Related requirements: REQ-051, REQ-052*
