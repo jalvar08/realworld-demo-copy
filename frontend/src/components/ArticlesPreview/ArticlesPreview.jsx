@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import ArticleCoverImage from "../ArticleCoverImage";
 import ArticleMeta from "../ArticleMeta";
 import ArticleTags from "../ArticleTags";
 import FavButton from "../FavButton";
@@ -32,6 +33,7 @@ function ArticlesPreview({ articles, loading, updateArticles }) {
             state={article}
             className="preview-link"
           >
+            <ArticleCoverImage image={article.image} />
             <h1>{article.title}</h1>
             <p>{article.description}</p>
             <span>Read more...</span>

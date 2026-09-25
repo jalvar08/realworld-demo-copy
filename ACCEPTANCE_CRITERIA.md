@@ -424,6 +424,32 @@ changed.
   authenticated), then no edit control is shown for that comment; it is
   shown only when they are the author.
 
+### US-030 — Article cover image
+*(REQ-051, REQ-052)*
+
+- **AC-084** — Given an authenticated user creates an article with an
+  `image` URL, when submitted, then the article is created with that image
+  stored, and the image URL is included in the returned article JSON.
+- **AC-085** — Given an authenticated user creates or updates an article
+  without an `image` value, when submitted, then the request succeeds
+  exactly as it did before this field existed, and REQ-015's required-field
+  validation (`title`, `description`, `body`) is unaffected.
+- **AC-086** — Given the article's author submits an update with a truthy
+  `image` value, when saved, then the article's stored image is replaced
+  with that value; given a falsy `image` value (e.g., an empty string) is
+  submitted instead, then the existing image is left unchanged — the same
+  truthy-check boundary REQ-017 already describes for `description` and
+  `body` on update.
+- **AC-087** — Given an article whose `image` is set, when its preview card
+  or detail page is rendered, then the cover image is displayed. Given an
+  article whose `image` is not set, when the same views are rendered, then
+  no `<img>` element and no placeholder are rendered in its place.
+- **AC-109** — *(REQ-064; supersedes the falsy-value clause of AC-086)*
+  Given an article with a stored cover image, when its author submits an
+  update whose `image` is an empty string or `null`, then the stored image
+  is cleared and the article renders with no cover image. Given an update
+  that omits `image` entirely, then the stored image is left unchanged.
+
 ---
 
 ## Traceability Matrix
@@ -480,3 +506,6 @@ changed.
 | REQ-048 | US-028 | AC-078, AC-079 |
 | REQ-049 | US-029 | AC-080–AC-082 |
 | REQ-050 | US-029 | AC-080, AC-083 |
+| REQ-051 | US-030 | AC-084–AC-086 |
+| REQ-052 | US-030 | AC-085, AC-087 |
+| REQ-064 | US-030 | AC-109 |
