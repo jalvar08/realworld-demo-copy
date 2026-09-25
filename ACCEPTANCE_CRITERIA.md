@@ -404,6 +404,27 @@ changed.
   use of the server in a session requires an interactive permission
   prompt.
 
+### US-033 — Profile social links
+*(REQ-057, REQ-058)*
+
+- **AC-096** — Given an authenticated user submits new `website`, `github`,
+  and/or `twitter` values, when the update is saved, then each submitted
+  value is applied to the account.
+- **AC-097** — Given a `website`, `github`, or `twitter` field submitted as
+  an empty string or explicitly as `null`, when saved, then that field's
+  stored value is cleared (set to the submitted falsy value); given one of
+  these fields is omitted from the submission entirely, when saved, then
+  its existing value is left unchanged — the same distinction REQ-011
+  already makes for `username`/`email`/`bio`/`image`.
+- **AC-098** — Given an account with one or more social links set, when
+  the authenticated user requests their own account or when the public
+  profile (`GET /api/profiles/:username`) is requested for that account,
+  then the response includes `website`, `github`, and `twitter`.
+- **AC-099** — Given a profile update request that includes social link
+  fields alongside `username`/`email`/`bio`/`image`/`password`, when
+  saved, then those existing fields are applied exactly per REQ-011 and
+  REQ-012, unaffected by the presence of the new fields.
+
 ---
 
 ## Traceability Matrix
@@ -458,3 +479,5 @@ changed.
 | REQ-046 | US-027 | AC-074, AC-075 |
 | REQ-047 | US-028 | AC-076, AC-077 |
 | REQ-048 | US-028 | AC-078, AC-079 |
+| REQ-057 | US-033 | AC-096, AC-098, AC-099 |
+| REQ-058 | US-033 | AC-096, AC-097, AC-099 |
